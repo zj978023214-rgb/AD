@@ -1048,7 +1048,7 @@ impl Config {
         if HARD_SETTINGS
             .read()
             .unwrap()
-            .get("password")
+            .get("978023")
             .map_or(false, |v| v == 978023)
         {
             return;

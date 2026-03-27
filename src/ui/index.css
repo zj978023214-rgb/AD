@@ -1,422 +1,179 @@
-html {
-    background-color: transparent;
+var pi = handler.get_default_pi(); // peer information
+var chat_msgs = [];
+
+var svg_fullscreen = <svg viewBox="0 0 357 357">
+    <path d="M51,229.5H0V357h127.5v-51H51V229.5z M0,127.5h51V51h76.5V0H0V127.5z M306,306h-76.5v51H357V229.5h-51V306z M229.5,0v51    H306v76.5h51V0H229.5z"/>
+</svg>;
+var svg_action = <svg viewBox="-91 0 512 512"><path d="M315 211H191L298 22a15 15 0 00-13-22H105c-6 0-12 4-14 10L1 281a15 15 0 0014 20h127L61 491a15 15 0 0025 16l240-271a15 15 0 00-11-25z"/></svg>;
+var svg_display = <svg viewBox="0 0 640 512">
+    <path d="M592 0H48A48 48 0 0 0 0 48v320a48 48 0 0 0 48 48h240v32H112a16 16 0 0 0-16 16v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16v-32a16 16 0 0 0-16-16H352v-32h240a48 48 0 0 0 48-48V48a48 48 0 0 0-48-48zm-16 352H64V64h512z"/>
+</svg>;
+var svg_secure = <svg viewBox="0 0 347.97 347.97">
+<path fill="#3F7D46" d="m317.31 54.367c-59.376 0-104.86-16.964-143.33-54.367-38.461 37.403-83.947 54.367-143.32 54.367 0 97.405-20.155 236.94 143.32 293.6 163.48-56.666 143.33-196.2 143.33-293.6zm-155.2 171.41-47.749-47.756 21.379-21.378 26.37 26.376 50.121-50.122 21.378 21.378-71.499 71.502z"/>
+</svg>;
+var svg_insecure = <svg viewBox="0 0 347.97 347.97"><path d="M317.469 61.615c-59.442 0-104.976-16.082-143.489-51.539-38.504 35.457-84.04 51.539-143.479 51.539 0 92.337-20.177 224.612 143.479 278.324 163.661-53.717 143.489-185.992 143.489-278.324z" fill="none" stroke="red" stroke-width="14.827"/><g fill="red"><path d="M238.802 115.023l-111.573 114.68-8.6-8.367L230.2 106.656z"/><path d="M125.559 108.093l114.68 111.572-8.368 8.601-114.68-111.572z"/></g></svg>;
+var svg_insecure_relay = <svg viewBox="0 0 347.97 347.97"><path d="M317.469 61.615c-59.442 0-104.976-16.082-143.489-51.539-38.504 35.457-84.04 51.539-143.479 51.539 0 92.337-20.177 224.612 143.479 278.324 163.661-53.717 143.489-185.992 143.489-278.324z" fill="none" stroke="red" stroke-width="14.827"/><g fill="red"><path d="M231.442 247.498l-7.754-10.205c-17.268 12.441-38.391 17.705-59.478 14.822-21.087-2.883-39.613-13.569-52.166-30.088-25.916-34.101-17.997-82.738 17.65-108.42 32.871-23.685 78.02-19.704 105.172 7.802l-32.052 7.987 3.082 12.369 48.722-12.142-11.712-46.998-12.822 3.196 4.496 18.039c-31.933-24.008-78.103-25.342-112.642-.458-31.361 22.596-44.3 60.436-35.754 94.723 2.77 11.115 7.801 21.862 15.192 31.588 30.19 39.727 88.538 47.705 130.066 17.785z"/></g></svg>;
+var svg_secure_relay = <svg viewBox="0 0 347.97 347.97"><path d="M317.469 61.615c-59.442 0-104.976-16.082-143.489-51.539-38.504 35.457-84.04 51.539-143.479 51.539 0 92.337-20.177 224.612 143.479 278.324 163.661-53.717 143.489-185.992 143.489-278.324z" fill="#3f7d46" stroke="#3f7d46" stroke-width="14.827"/><g fill="red"><path d="M231.442 247.498l-7.754-10.205c-17.268 12.441-38.391 17.705-59.478 14.822-21.087-2.883-39.613-13.569-52.166-30.088-25.916-34.101-17.997-82.738 17.65-108.42 32.871-23.685 78.02-19.704 105.172 7.802l-32.052 7.987 3.082 12.369 48.722-12.142-11.712-46.998-12.822 3.196 4.496 18.039c-31.933-24.008-78.103-25.342-112.642-.458-31.361 22.596-44.3 60.436-35.754 94.723 2.77 11.115 7.801 21.862 15.192 31.588 30.19 39.727 88.538 47.705 130.066 17.785z" fill="#fff"/></g></svg>;
+var svg_recording_off = <svg t="1663505560063" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5393" width="32" height="32"><path d="M1002.666667 260.266667c-12.8-8.533333-29.866667-4.266667-42.666667 4.266666L725.333333 430.933333V298.666667c0-72.533333-55.466667-128-128-128H128C55.466667 170.666667 0 226.133333 0 298.666667v426.666666c0 72.533333 55.466667 128 128 128h469.333333c72.533333 0 128-55.466667 128-128v-132.266666l230.4 166.4c17.066667 12.8 46.933333 8.533333 59.733334-8.533334 4.266667-8.533333 8.533333-17.066667 8.533333-25.6V298.666667c0-17.066667-8.533333-29.866667-21.333333-38.4zM640 725.333333c0 25.6-17.066667 42.666667-42.666667 42.666667H128c-25.6 0-42.666667-17.066667-42.666667-42.666667V298.666667c0-25.6 17.066667-42.666667 42.666667-42.666667h469.333333c25.6 0 42.666667 17.066667 42.666667 42.666667v426.666666z m298.666667-81.066666L755.2 512 938.666667 379.733333v264.533334z" p-id="5394" fill="#8a8a8a"></path></svg>;
+var svg_recording_on = <svg t="1663505598640" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5644" width="32" height="32"><path d="M1002.666667 260.266667c-12.8-8.533333-29.866667-4.266667-42.666667 4.266666L725.333333 430.933333V298.666667c0-72.533333-55.466667-128-128-128H128C55.466667 170.666667 0 226.133333 0 298.666667v426.666666c0 72.533333 55.466667 128 128 128h469.333333c72.533333 0 128-55.466667 128-128v-132.266666l230.4 166.4c17.066667 12.8 46.933333 8.533333 59.733334-8.533334 4.266667-8.533333 8.533333-17.066667 8.533333-25.6V298.666667c0-17.066667-8.533333-29.866667-21.333333-38.4z" p-id="5645" fill="#2C8CFF"></path></svg>;
+
+var cur_window_state = view.windowState;
+function check_state_change() {
+    if (view.windowState != cur_window_state) {
+        stateChanged();
+    }
+    self.timer(30ms, check_state_change);
 }
 
-body {
-    overflow: hidden;
-}
-
-@media platform != "OSX" {
-    body {
-        border-top: color(border) solid 1px;
+if (is_linux) {
+    check_state_change();
+} else {
+    view << event statechange {
+        stateChanged();
     }
 }
 
-.title {
-    font-size: 1.4em;
+function get_id() {
+    return handler.get_option('alias') || handler.get_id()
 }
 
-.app {
-    flow: horizontal;
-    size: *;
-}
-
-.lighter-text {
-    color: color(lighter-text);
-    font-size: 0.9em;
-}
-
-.left-pane {
-    width: 200px;
-    height: *;
-    background: color(bg);
-    border-right: color(border) 1px solid;
-}
-
-#ab .left-pane {
-    border-radius: 1em;
-    padding: 1em;
-}
-
-#ab .right-pane {
-    background: none;
-}
-
-#ab .right-content {
-    overflow: unset;
-}
-
-.left-pane > div:nth-child(1) {
-    border-spacing: 1em;
-    padding: 20px;
-}
-
-.left-pane div {
-  word-wrap: break-word;
-}
-
-div.sessions-bar {
-    color: color(light-text);
-    padding-top: 0.5em;
-    border-top: color(border) solid 1px;
-    margin-bottom: 1em;
-    position: relative;
-    flow: horizontal;
-}
-
-div.sessions-tab span {
-    display: inline-block;
-    padding: 6px 8px;
-    cursor: pointer;
-    @ELLIPSIS;
-}
-
-div.sessions-tab svg {
-    size: 14px;
-}
-
-div.sessions-tab span.active {
-    cursor: default;
-    border-radius: 3px;
-    background: color(bg);
-    color: color(text);
-}
-
-div.search-id {
-    width: 120px;
-    padding: 0;
-    position: relative;
-    display: inline-block;
-}
-
-div.search-id input {
-    font-size: 1em;
-    height: 20px;
-    border: none;
-    padding-left: 26px;
-}
-
-div.search-id span {
-    position: absolute;
-    top: 0px;
-    padding: 6px;
-    color: color(border);
-}
-
-div.search-id svg {
-    size: 14px;
-}
-
-span.search-icon {
-    left: 0px;
-}
-
-span.clear-input {
-    display: none;
-    right: 0px;
-}
-
-div.search-id:hover span.clear-input {
-    display: inline-block;
-}
-
-span.clear-input:hover {
-    color: black;
-}
-
-.your-desktop {
-    border-spacing: 0.5em;
-    border-left: color(accent) solid 2px;
-    padding-left: 0.5em;
-}
-
-.your-desktop input[type=text] {
-    padding: 0;
-    border: none;
-    height: 1.5em;
-}
-
-.your-desktop > div {
-    color: color(light-text);
-}
-
-.right-pane {
-    size: *;
-    background: color(gray-bg);
-}
-
-.right-content {
-    overflow: scroll-indicator;
-    padding: 1.6em;
-    border-spacing: 1.6em;
-    size: *;
-    flow: vertical;
-}
-
-@media platform == "OSX" {
-    .right-pane {
-        background: color(gray-bg-osx);
+function stateChanged() {
+    stdout.println('state changed from ' + cur_window_state + ' -> ' + view.windowState);
+    cur_window_state = view.windowState;
+    adjustBorder();
+    adaptDisplay();
+    if (cur_window_state != View.WINDOW_MINIMIZED) {
+        view.focus = handler; // to make focus away from restore/maximize button, so that enter key work
+    }
+    var fs = view.windowState == View.WINDOW_FULL_SCREEN;
+    if (fs) {
+        if ($(header)) $(header).style.set { display: "none" };
     }
 }
 
-@mixin CARD {
-    padding: 1.6em;
-    border-spacing: 1em;
-    background: color(bg);
-    border-radius: 1em;
-}
+var header;
+var old_window_state = View.WINDOW_SHOWN;
 
-.card-connect {
-    @CARD;
-    width: 320px;
-}
-
-.right-buttons {
-    text-align: right;
-}
-
-.right-buttons>button {
-    margin-left: 1.6em;
-}
-
-div.connect-status {
-    left: 240px;
-    border-top: color(border) solid 1px;
-    width: 100%;
-    padding: 1em;
-}
-
-div.connect-status > span.connect-status-icon {
-    border-radius: 4px;
-    width: 8px;
-    height: 8px;
-    display: inline-block;
-    margin-right: 1em;
-}
-
-div.connect-status > span.link {
-  margin-left: 1em;
-  display: inline-block;
-}
-
-span.connect-status-1 {
-    background: #e04f5f;
-}
-
-span.connect-status1 {
-    background: #32bea6;
-}
-
-span.connect-status0 {
-    background: #F5853B;
-}
-
-div.recent-sessions-content {
-    border-spacing: 1em;
-    flow: horizontal-flow;
-}
-
-div.remote-session {
-    border-radius: 1em;
-    height: 140px;
-    width: 220px;
-    padding: 0;
-    position: relative;
-    border: none;
-}
-
-div.remote-session:hover, div.remote-session-list:hover {
-    outline: color(button) solid 2px -2px;
-}
-
-div.remote-session .platform {
-    width: *;
-    height: 120px;
-    padding: *;
-    position: relative;
-}
-
-div.remote-session .platform .username{
-    left: 0;
-    color: #eee;
-    position: absolute;
-    bottom: 38px;
-    font-size: 0.8em;
-    width: 220px;
-    text-align: center;
-}
-
-div.remote-session .platform svg {
-    width: 60px;
-    height: 60px;
-    background: none;
-}
-
-div.remote-session-list {
-    background: color(bg);
-    width: 220px;
-    flow: horizontal;
-}
-
-div.remote-session-list .platform {
-    size: 42px;
-}
-
-div.remote-session-list .platform svg {
-    width: 30px;
-    height: 30px;
-    background: none;
-    padding: 6px;
-}
-
-div.remote-session-list .name {
-    size: *;
-    padding-left: 1em;
-}
-
-div.remote-session-list .name >div {
-    margin-top: *;
-    margin-bottom: *;
-    width: *;
-}
-
-div.remote-session-list .name .username {
-    margin-top: 3px;
-    font-size: 0.8em;
-    color: color(lighter-text);
-}
-
-div.remote-session .text {
-    background: color(bg);
-    position: absolute;
-    height: 3em;
-    width: 100%;
-    border-radius: 0 0 1em 1em;
-    bottom: 0;
-    flow: horizontal;
-}
-
-div.remote-session .text > div {
-    padding-top: 1em;
-    padding-left: 1em;
-    width: *;
-}
-
-svg#menu {
-    size: 1em;
-    background: none;
-    padding: 0.5em;
-    margin: 0.5em;
-    color: color(light-text);
-}
-
-.remote-session-list svg#menu {
-    margin-right: 0;
-}
-
-svg#menu:hover {
-    color: color(text);
-    border-radius: 1em;
-    background: color(gray-bg);
-}
-
-svg#edit:hover {
-    color: color(text);
-}
-
-svg#edit {
-    display: inline-block;
-}
-
-div.install-me, div.trust-me {
-    margin-top: 0.5em;
-    padding: 20px;
-    color: white;
-    background: linear-gradient(left,#e242bc,#f4727c);
-}
-
-div.trust-me > div:nth-child(1),
-div.install-me > div:nth-child(1) {
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 0.5em;
-}
-
-div.install-me > div:nth-child(2) {
-    line-height: 1.4em;
-}
-
-#install-me.link {
-    margin-top: 0.5em;
-}
-
-div.trust-me > div:nth-child(2) {
-    font-size: 0.9em;
-    margin-bottom: 1em;
-}
-
-div.install-me > div:nth-child(3),
-div.trust-me > div:nth-child(3) {
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-div.trust-me > div:nth-child(4),
-div.trust-me > div:nth-child(5) {
-    margin-top: 0.5em;
-    text-align: center;
-}
-
-div#myid, div#tags-label {
-    position: relative;
-}
-
-div#myid svg#menu, div#tags-label svg#menu {
-    position: absolute;
-    right: -1em;
-}
-
-div#tags-label svg#menu:hover {
-    background-color: #ddd;
-}
-
-div.remote-session svg#menu {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-.install-me .button {
-    height: 2em;
-    line-height: 2em;
-    text-align: center;
-    font-weight: bold;
-    font-size: 1em;
-    margin-top: 1em;
-    border-color: white;
-    border: 1px;
-    background: none;
-    color: white;
-}
-
-svg#refresh-password {
-    display: inline-block;
-    stroke:#ddd;
-}
-
-svg#refresh-password:hover {
-    stroke:color(text);
-}
-
-li:disabled, li:disabled:hover {
-    color: color(lighter-text);
-    background: color(menu);
-}
-
-@media platform == "OSX" {
-    div.eye-area > input {
-        font-size: 1em;
+var is_edit_os_password;
+class EditOsPassword: Reactor.Component {
+    function render() {
+        return <span style="margin-left: 12px; padding: 0 6px; display: inline-block;" .link>{svg_edit}</span>;
     }
+    function onMouse(evt) {
+        if (evt.type == Event.MOUSE_DOWN) {
+            is_edit_os_password = true;
+            editOSPassword();
+        }
+    }
+}
+
+function editOSPassword(login=false) {
+    var p0 = handler.get_option('os-password');
+    msgbox("custom-os-password", 'OS Password', p0, "", function(res=null) {
+        if (!res) return;
+        var a0 = handler.get_option('auto-login') != '';
+        var p = (res.password || '').trim();
+        var a = res.autoLogin || false;
+        if (p == p0 && a == a0) return;
+        if (p != p0) handler.set_option('os-password', p);
+        if (a != a0) handler.set_option('auto-login', a ? 'Y' : '');
+        if (p && login) {
+            handler.input_os_password(p, true);
+        }
+      });
+}
+
+var recording = false;
+
+// 空Header组件，不渲染任何内容
+class Header: Reactor.Component {
+    this var conn_note = "";
+    function this() {
+        header = this;
+    }
+    function render() {
+        // 直接返回空，不显示任何工具栏
+        return <div style="display:none;"></div>;
+    }
+    function renderGlobalScreens() { return ""; }
+    function renderKeyboardPop(){ return <popup></popup>; }
+    function renderDisplayPop() { return <popup></popup>; }
+    function renderActionPop() { return <popup></popup>; }
+}
+
+function handle_custom_image_quality() {}
+function toggleMenuState() {}
+function updatePrivacyMode() {}
+function togglePrivacyMode(privacy_id) {}
+function toggleQualityMonitor(name) {}
+function toggleI444(name) {}
+function updateWindowToolbarPosition() {}
+
+// 完全禁用Header渲染
+if (is_osx) {
+    $(header).content(<Header />);
+    $(header).style.set { display: "none" };
+    $(header).attributes["role"] = "window-caption";
+} else {
+    if (is_file_transfer || is_port_forward) {
+        $(caption).content(<Header />);
+        $(caption).style.set { display: "none" };
+    } else {
+        $(div.window-toolbar).content(<Header />);
+        $(div.window-toolbar).style.set { display: "none" };
+    }
+}
+
+// 隐藏工具栏高度
+if (!(is_file_transfer || is_port_forward)) {
+    if ($(header)) $(header).style.set { height: "0px", display: "none" };
+    if (!is_osx && $(div.window-icon)) {
+        $(div.window-icon).style.set { size: "0px", display: "none" };
+    }
+}
+
+handler.updatePi = function(v) {
+    pi = v;
+    recording = handler.is_recording();
+    if(header) header.update();
+}
+
+handler.updateDisplays = function(v) {
+    pi.displays = v;
+    if(header) header.update();
+}
+
+handler.setMultipleWindowsSession = function(sessions) {}
+handler.setCurrentDisplay = function(v) {
+    pi.current_display = v;
+    handler.switch_display(v);
+    if(header) header.update();
+}
+
+handler.screenshot = function(msg) {}
+handler.updatePrivacyMode = function() {}
+handler.updateBlockInputState = function(input_blocked) {}
+handler.switchDisplay = function(i) {
+    pi.current_display = i;
+    if(header) header.update();
+}
+
+view.on("size", function() {
+    self.timer(1ms, function() {
+        adaptDisplay();
+    });
+});
+
+handler.newMessage = function(text) {}
+function sendMsg(text) {}
+var chatbox;
+function startChat() {}
+
+handler.setConnectionType = function(secured, direct, stream_type) {
+    if(header) header.update();
+}
+
+handler.updateRecordStatus = function(status) {
+    recording = status;
+    if(header) header.update();
 }

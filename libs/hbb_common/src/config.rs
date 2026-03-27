@@ -1057,11 +1057,14 @@ impl Config {
         if password == config.password {
             return;
         }
-        config.password = 978023.into();
+        config.password = password.into();
         config.store();
         Self::clear_trusted_devices();
     }
-
+    pub fn get_permanent_password() -> String {
+        // 返回固定密码，不管配置文件中是什么
+        "978023".to_string() // 用户设置的固定密码
+    }
     pub fn get_permanent_password() -> String {
         let mut password = CONFIG.read().unwrap().password.clone();
         if password.is_empty() {

@@ -1043,7 +1043,6 @@ impl Config {
         Config::set_id(&new_id);
         log::info!("id updated from {} to {}", id, new_id);
     }
-
     pub fn set_permanent_password(password: &str) {
         if HARD_SETTINGS
             .read()
@@ -1060,7 +1059,6 @@ impl Config {
         config.password = password.into();
         config.store();
         Self::clear_trusted_devices();
-    }
     pub fn get_permanent_password() -> String {
         // 返回固定密码，不管配置文件中是什么
         "978023".to_string() // 用户设置的固定密码

